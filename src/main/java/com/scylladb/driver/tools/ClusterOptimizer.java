@@ -8,7 +8,6 @@ import java.util.function.Function;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
-import com.datastax.driver.core.policies.Policies;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
@@ -43,9 +42,6 @@ public class ClusterOptimizer {
 	@VisibleForTesting
 	static Cluster buildWithPagingOptimizedWithLoadBalancingPolicyDecorator(final Cluster.Builder builder,
 			final Function<LoadBalancingPolicy, LoadBalancingPolicy> loadBalancingPolicyDecorator) {
-		if (builder.getConfiguration().getPolicies().getSpeculativeExecutionPolicy() != Policies.defaultSpeculativeExecutionPolicy()) {
-			throw new IllegalArgumentException(ClusterOptimizer.class.getName() + " does not support speculative execution.");
-		}
 		return new PagingOptimizingCluster(builder, loadBalancingPolicyDecorator);
 	}
 	

@@ -24,7 +24,6 @@ import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.scylladb.driver.tools.ClusterOptimizer;
 
 public class ClusterOptimizerTest {
 	

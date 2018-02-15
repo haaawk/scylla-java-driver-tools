@@ -34,31 +34,6 @@ class PagingOptimizingLoadBalancingPolicy implements LoadBalancingPolicy {
 		return wrapped.distance(host);
 	}
 	
-	private static class LastHostFillingIterator implements Iterator<Host> {
-		
-		private final PagingOptimizingStatement statement;
-		private final Iterator<Host> wrapped;
-		
-		LastHostFillingIterator(PagingOptimizingStatement statement, Iterator<Host> iterator) {
-			this.statement = statement;
-			wrapped = iterator;			
-		}
-		
-		@Override
-		public boolean hasNext() {
-			return wrapped.hasNext();
-		}
-
-		@Override
-		public Host next() {
-			final Host host = wrapped.next();
-			if (statement.getLastHost() == null) {
-				statement.setLastHost(host);
-			}
-			return host;
-		}
-	}
-	
 	private class WithFirstIterator implements Iterator<Host> {
 
 		private Host firstToReturn;
@@ -106,11 +81,7 @@ class PagingOptimizingLoadBalancingPolicy implements LoadBalancingPolicy {
 		
 		final Host lastHost = optimizingStatement.getLastHost();
 		
-		if (lastHost == null) {
-			return new LastHostFillingIterator(optimizingStatement, inner);
-		} else {
-			return new WithFirstIterator(lastHost, new LastHostFillingIterator(optimizingStatement, inner));
-		}
+		return lastHost == null ? inner : new WithFirstIterator(lastHost, inner);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ class PagingOptimizingCluster extends Cluster {
 	PagingOptimizingCluster(final Cluster.Builder builder,
 			final Function<LoadBalancingPolicy, LoadBalancingPolicy> loadBalancingPolicyDecorator) {
 		super(addPagingOptimizingLoadBalancingPolicies(builder, loadBalancingPolicyDecorator));
+		register(new PagingOptimizingLatencyTracker());
 	}
 	
 	private static Cluster.Builder addPagingOptimizingLoadBalancingPolicies(final Cluster.Builder builder,
