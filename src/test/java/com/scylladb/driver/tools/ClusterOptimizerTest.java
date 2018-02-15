@@ -22,6 +22,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.StatementWrapper;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
@@ -131,5 +132,21 @@ public class ClusterOptimizerTest {
 	public void testBuiltStatement() {
 		testStatement(QueryBuilder.select().all().from("test", "test").where(QueryBuilder.eq("pk", 1)));
 	}
+	
+	@Test
+    public void testStatementWrapperWithSimpleStatement() {
+    	testStatement(new StatementWrapper(new SimpleStatement("select * from test.test")) {});
+    }
+	
+	@Test
+    public void testStatementWrapperWithPreparedStatement() {
+		final PreparedStatement prepared = testedSession.prepare("select * from test.test where pk = ?;");
+    	testStatement(new StatementWrapper(prepared.bind(0)) {});
+    }
+	
+    @Test
+    public void testStatementWrapperWithBuildtStatement() {
+    	testStatement(new StatementWrapper(QueryBuilder.select().all().from("test", "test").where(QueryBuilder.eq("pk", 1))) {});
+    }
 
 }
