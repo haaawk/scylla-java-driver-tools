@@ -6,6 +6,8 @@ package com.scylladb.driver.tools;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -18,6 +20,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
@@ -100,7 +103,24 @@ public class ClusterOptimizerTest {
 	    }
 	}
 	
-	private void testStatement(final Statement statement) {
+	private void executeAsyncAndReadAllRows(final Statement statement) throws Exception {
+		statement.setFetchSize(FETCH_SIZE);
+	    
+	    final ResultSetFuture rsFuture = testedSession.executeAsync(statement);
+	    ResultSet rs = rsFuture.get();
+	    do {
+		    Iterator<Row> it = rs.iterator();
+		    while (rs.getAvailableWithoutFetching() > 0) {
+		    	it.next();
+		    }
+		    if (rs.isFullyFetched()) {
+		    	break;
+		    }
+		    rs = rs.fetchMoreResults().get();
+	    } while (true);
+	}
+	
+	private void testStatement(final Statement statement) throws Exception {
 		loadBalancingPolicyDecorator.clearHosts();
 		executeAndReadAllRows(statement);
 		loadBalancingPolicyDecorator.assertOnlyOneHostContacted();
@@ -114,38 +134,48 @@ public class ClusterOptimizerTest {
 		Assert.assertNotEquals(
 				"Two consecutive executions of the same statement should go to different nodes due to round robin load balancing policy.",
 				contactedHost1,
-				contactedHost2); 
+				contactedHost2);
+		
+		loadBalancingPolicyDecorator.clearHosts();
+		executeAsyncAndReadAllRows(statement);
+		loadBalancingPolicyDecorator.assertOnlyOneHostContacted();
+		final Host contactedHost3 = loadBalancingPolicyDecorator.getContactedHost();
+		
+		Assert.assertNotEquals(
+				"Two consecutive executions of the same statement should go to different nodes due to round robin load balancing policy.",
+				contactedHost2,
+				contactedHost3);
 	}
 	
 	@Test
-	public void testSimpleStatement() {
+	public void testSimpleStatement() throws Exception {
 		testStatement(new SimpleStatement("select * from test.test")); 
 	}
 	
 	@Test
-	public void testPreparedStatement() {
+	public void testPreparedStatement() throws Exception {
 		final PreparedStatement prepared = testedSession.prepare("select * from test.test where pk = ?;");
 	    testStatement(prepared.bind(0));
 	}
 	
 	@Test
-	public void testBuiltStatement() {
+	public void testBuiltStatement() throws Exception {
 		testStatement(QueryBuilder.select().all().from("test", "test").where(QueryBuilder.eq("pk", 1)));
 	}
 	
 	@Test
-    public void testStatementWrapperWithSimpleStatement() {
+    public void testStatementWrapperWithSimpleStatement() throws Exception {
     	testStatement(new StatementWrapper(new SimpleStatement("select * from test.test")) {});
     }
 	
 	@Test
-    public void testStatementWrapperWithPreparedStatement() {
+    public void testStatementWrapperWithPreparedStatement() throws Exception {
 		final PreparedStatement prepared = testedSession.prepare("select * from test.test where pk = ?;");
     	testStatement(new StatementWrapper(prepared.bind(0)) {});
     }
 	
     @Test
-    public void testStatementWrapperWithBuildtStatement() {
+    public void testStatementWrapperWithBuildtStatement() throws Exception {
     	testStatement(new StatementWrapper(QueryBuilder.select().all().from("test", "test").where(QueryBuilder.eq("pk", 1))) {});
     }
 
