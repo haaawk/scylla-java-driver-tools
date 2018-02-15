@@ -1,4 +1,4 @@
-This project is a set of utilities that improve [datastax java-driver](https://github.com/datastax/java-driver) for ScyllaDB and Apache Cassandra®.
+This project is a set of utilities that improve [datastax java-driver](https://github.com/datastax/java-driver) for [ScyllaDB](https://github.com/scylladb/scylla) and [Apache Cassandra®](https://github.com/apache/cassandra).
 
 ## License
 
