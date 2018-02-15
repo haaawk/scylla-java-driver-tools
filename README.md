@@ -14,8 +14,6 @@ Cluster cluster = ClusterOptimizer.buildWithPagingOptimized(builder);
 This will make sure that when a query results in multiple pages then all of those pages are obtained from the same node (if possible).
 This makes locality of the query much better and allows better usage of caches.
 
-This enhancement does not work with speculative execution yet.
-
 ## License
 
 Copyright (C) 2018 ScyllaDB
