@@ -3,10 +3,38 @@
     <groupId>com.scylladb</groupId>
     <artifactId>scylla-java-driver-tools</artifactId>
     <version>1.0.0</version>
+
+    <name>Scylla Java Driver Tools</name>
+    <description>Library that improves Datastax Java Driver for ScyllaDB and Apache Cassandra®</description>
+    <url>https://github.com/haaawk/scylla-java-driver-tools</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Piotr Jastrzebski</name>
+            <email>piotr@scylladb.com</email>
+            <organization>ScyllaDB</organization>
+            <organizationUrl>http://www.scylladb.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/haaawk/scylla-java-driver-tools.git</connection>
+        <developerConnection>scm:git:ssh://github.com:haaawk/scylla-java-driver-tools.git</developerConnection>
+        <url>http://github.com/haaawk/scylla-java-driver-tools/tree/master</url>
+    </scm>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
