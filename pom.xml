@@ -18,6 +18,7 @@
 
     <modules>
         <module>${artifactId}-lib</module>
+        <module>${artifactId}-agent</module>
     </modules>
 
     <description>Library that improves Datastax Java Driver for ScyllaDB and Apache Cassandra®</description>
