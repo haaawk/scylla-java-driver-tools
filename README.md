@@ -14,6 +14,14 @@ Cluster cluster = ClusterOptimizer.buildWithPagingOptimized(builder);
 This will make sure that when a query results in multiple pages then all of those pages are obtained from the same node (if possible).
 This makes locality of the query much better and allows better usage of caches.
 
+## Instumenting existing application
+
+If you can't or don't want to modify your code, you can use a java agent that will instrument your existing code and apply the same optimization as if you had changed all invocations of `Cluster$Builder#build` to `ClusterOptimizer.buildWithPagingOptimized(builder)`.
+
+To instrument your application you need to run it with the following command:
+
+`JAVA_TOOL_OPTIONS="-javaagent:<path to scylla-java-driver-tools-agent-1.0.0-jar-with-dependencies.jar>" <command starting your application>`
+
 ## License
 
 Copyright (C) 2018 ScyllaDB
